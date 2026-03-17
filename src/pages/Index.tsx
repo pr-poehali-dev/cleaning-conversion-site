@@ -68,8 +68,13 @@ const faqs = [
   },
 ];
 
-const galleryImage =
-  "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/files/685ac620-3c37-4643-94c7-590b4392a982.jpg";
+const galleryItems = [
+  { id: 1, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/95cab6ed-18c5-4a32-98d7-5b981293bcfc.png", alt: "Химчистка углового дивана" },
+  { id: 2, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/d2a455a6-0874-4093-af12-9dfcca6fa877.jpg", alt: "Химчистка дивана до и после" },
+  { id: 3, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/289adb90-ff93-4f41-a249-778e55a498cf.jpg", alt: "Химчистка белого дивана" },
+  { id: 4, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/47fecc49-6ebb-4b60-a50a-0ac5cdc81957.jpg", alt: "Химчистка бежевого дивана" },
+  { id: 5, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/51c49ee9-9639-4d3b-bccc-7c4d38ecd2bc.jpg", alt: "Химчистка серого дивана до и после" },
+];
 
 function StarRating({ count }: { count: number }) {
   return (
@@ -393,15 +398,15 @@ export default function Index() {
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-2xl font-black mb-2">Галерея работ</h2>
           <p className="text-gray-500 text-sm mb-8">Примеры химчистки мебели</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((n) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {galleryItems.map((item) => (
               <div
-                key={n}
+                key={item.id}
                 className="aspect-square rounded-xl overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity cursor-pointer relative group"
               >
                 <img
-                  src={galleryImage}
-                  alt={`Работа ${n}`}
+                  src={item.src}
+                  alt={item.alt}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
