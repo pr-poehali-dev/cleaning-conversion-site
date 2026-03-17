@@ -230,17 +230,8 @@ export default function Index() {
               </div>
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
             </div>
-            <div className="text-sm text-gray-700 leading-relaxed">
-              Я — Александр, частный мастер по химчистке мебели. Работаю быстро и
-              качественно, а главное — на совесть. На все работы даю гарантию. Для
-              консультации звоните прямо сейчас:{" "}
-              <a
-                href={`tel:${PHONE_RAW}`}
-                className="text-[#f5a623] font-semibold hover:underline"
-              >
-                {PHONE}
-              </a>
-            </div>
+            <div className="text-sm text-gray-700 leading-relaxed">Я — Александр, частный мастер по химчистке мебели. Работаю быстро и качественно, а главное — на совесть. На все работы даю гарантию. Для консультации звоните прямо сейчас: +7 (984) 500-42-20
+</div>
           </div>
 
           {/* CALLBACK FORM */}
