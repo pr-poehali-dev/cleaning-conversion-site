@@ -228,7 +228,7 @@ export default function Index() {
             <div className="relative shrink-0">
               <div className="w-16 h-16 rounded-full bg-[#e8e8e8] overflow-hidden">
                 <img
-                  src={galleryImage}
+                  src={galleryItems[0].src}
                   className="w-full h-full object-cover"
                   alt="Мастер"
                 />
