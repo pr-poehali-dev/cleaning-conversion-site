@@ -167,6 +167,7 @@ export default function Index() {
   const [submitted, setSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -481,6 +482,7 @@ export default function Index() {
             {galleryItems.map((item) => (
               <div
                 key={item.id}
+                onClick={() => setLightbox({ src: item.src, alt: item.alt })}
                 className="aspect-square rounded-xl overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity cursor-pointer relative group"
               >
                 <img
@@ -498,6 +500,26 @@ export default function Index() {
               </div>
             ))}
           </div>
+
+          {lightbox && (
+            <div
+              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+              onClick={() => setLightbox(null)}
+            >
+              <button
+                className="absolute top-4 right-4 text-white bg-black/40 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70 transition-colors"
+                onClick={() => setLightbox(null)}
+              >
+                <Icon name="X" size={20} className="text-white" />
+              </button>
+              <img
+                src={lightbox.src}
+                alt={lightbox.alt}
+                className="max-w-full max-h-[90vh] rounded-xl object-contain shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
         </div>
       </section>
 
