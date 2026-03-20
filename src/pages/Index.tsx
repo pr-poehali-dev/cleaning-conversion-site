@@ -228,7 +228,7 @@ export default function Index() {
             <div className="relative shrink-0">
               <div className="w-16 h-16 rounded-full bg-[#e8e8e8] overflow-hidden">
                 <img
-                  src={galleryItems[0].src}
+                  src="https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/8393630e-a50d-473e-ab26-c8720f6e3846.png"
                   className="w-full h-full object-cover"
                   alt="Мастер"
                 />
