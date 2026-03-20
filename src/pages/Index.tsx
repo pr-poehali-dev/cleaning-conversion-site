@@ -7,15 +7,21 @@ const TG_LINK = "https://t.me/username";
 const MAX_LINK = "https://max.ru/username";
 
 const services = [
-  { name: "Химчистка дивана (2–3 секции)", price: "от 1 500 ₽" },
-  { name: "Химчистка кресла", price: "от 800 ₽" },
-  { name: "Химчистка матраса", price: "от 1 200 ₽" },
-  { name: "Химчистка стула", price: "от 300 ₽" },
-  { name: "Химчистка ковра", price: "от 100 ₽/м²" },
-  { name: "Химчистка автомобильного салона", price: "от 2 500 ₽" },
-  { name: "Выведение пятен", price: "от 500 ₽" },
-  { name: "Дезодорация мебели", price: "от 400 ₽" },
-  { name: "Консультация и выезд", price: "Бесплатно" },
+  { category: "🛋 Диваны", name: "", price: "" },
+  { name: "2-местный диван", price: "от 3 590 ₽" },
+  { name: "3-местный диван", price: "от 4 590 ₽" },
+  { name: "4-местный диван", price: "от 5 590 ₽" },
+  { name: "Угловой диван", price: "от 5 390 ₽" },
+  { name: "П-образный диван", price: "от 6 790 ₽" },
+  { category: "🪑 Кресла и стулья", name: "", price: "" },
+  { name: "Кресло", price: "от 2 290 ₽" },
+  { name: "Кресло-кровать", price: "от 2 690 ₽" },
+  { name: "Стул с мягкой спинкой", price: "1 190 ₽" },
+  { name: "Стул без мягкой спинки", price: "790 ₽" },
+  { category: "🛏 Матрасы", name: "", price: "" },
+  { name: "Односпальный", price: "от 1 490 ₽" },
+  { name: "Полуторный", price: "от 2 290 ₽" },
+  { name: "Двуспальный", price: "от 3 190 ₽" },
 ];
 
 const reviews = [
@@ -333,19 +339,32 @@ export default function Index() {
           <div id="prices">
             <h2 className="text-2xl font-black mb-4">Стоимость работ:</h2>
             <div className="rounded-xl overflow-hidden border border-gray-100">
-              {services.map((s, i) => (
-                <div
-                  key={s.name}
-                  className={`flex items-center justify-between px-5 py-3 text-sm ${
-                    i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-yellow-50 transition-colors`}
-                >
-                  <span className="text-gray-600">{s.name}</span>
-                  <span className="font-bold text-[#1a1a1a] whitespace-nowrap ml-4">
-                    {s.price}
-                  </span>
-                </div>
-              ))}
+              {services.map((s, i) =>
+                s.category ? (
+                  <div
+                    key={s.category}
+                    className="px-5 py-2.5 bg-gray-100 font-bold text-sm text-[#1a1a1a]"
+                  >
+                    {s.category}
+                  </div>
+                ) : (
+                  <div
+                    key={s.name + i}
+                    className={`flex items-center justify-between px-5 py-3 text-sm ${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-yellow-50 transition-colors`}
+                  >
+                    <span className="text-gray-600">{s.name}</span>
+                    <span className="font-bold text-[#1a1a1a] whitespace-nowrap ml-4">
+                      {s.price}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+            <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#1a1a1a] bg-yellow-50 border border-[#f5a623] rounded-lg px-4 py-3">
+              <span>👉</span>
+              <span>Точную цену назовём по фото за 1 минуту</span>
             </div>
           </div>
         </div>
