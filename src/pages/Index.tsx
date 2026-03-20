@@ -185,6 +185,21 @@ export default function Index() {
     setMobileMenuOpen(false);
   };
 
+  const applyPhoneMask = (value: string): string => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (!digits) return "";
+    let result = "+7";
+    if (digits.length > 1) result += " (" + digits.slice(1, 4);
+    if (digits.length >= 4) result += ") " + digits.slice(4, 7);
+    if (digits.length >= 7) result += "-" + digits.slice(7, 9);
+    if (digits.length >= 9) result += "-" + digits.slice(9, 11);
+    return result;
+  };
+
+  const handlePhoneChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setter(applyPhoneMask(e.target.value));
+  };
+
   return (
     <div className="min-h-screen bg-white font-montserrat text-[#1a1a1a]">
 
@@ -319,8 +334,9 @@ export default function Index() {
               <input
                 type="tel"
                 value={heroPhone}
-                onChange={(e) => setHeroPhone(e.target.value)}
+                onChange={handlePhoneChange(setHeroPhone)}
                 placeholder="+7 (___) ___-__-__"
+                maxLength={18}
                 className="flex-1 min-w-[180px] px-4 py-3 rounded-lg border-2 border-white bg-white text-[#1a1a1a] font-medium placeholder:text-gray-400 focus:outline-none text-sm"
               />
               <button className="bg-white text-[#1a1a1a] font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm whitespace-nowrap">
@@ -403,8 +419,9 @@ export default function Index() {
             <input
               type="tel"
               value={sidePhone}
-              onChange={(e) => setSidePhone(e.target.value)}
+              onChange={handlePhoneChange(setSidePhone)}
               placeholder="+7 (___) ___-__-__"
+              maxLength={18}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
             />
             <button className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
@@ -561,8 +578,9 @@ export default function Index() {
                     required
                     type="tel"
                     value={photoPhone}
-                    onChange={(e) => setPhotoPhone(e.target.value)}
+                    onChange={handlePhoneChange(setPhotoPhone)}
                     placeholder="+7 (___) ___-__-__"
+                    maxLength={18}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors"
                   />
                 </div>
@@ -719,8 +737,9 @@ export default function Index() {
               <input
                 type="tel"
                 value={reviewPhone}
-                onChange={(e) => setReviewPhone(e.target.value)}
+                onChange={handlePhoneChange(setReviewPhone)}
                 placeholder="+7 (___) ___-__-__"
+                maxLength={18}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
               />
               <button className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
