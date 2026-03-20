@@ -3,11 +3,23 @@ import Icon from "@/components/ui/icon";
 
 const SEND_LEAD_URL = "https://functions.poehali.dev/3b0862b6-b985-4b0e-93df-941d814f6cd7";
 
-async function sendLead(phone: string, source: string, name?: string, comment?: string) {
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve((reader.result as string).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function sendLead(phone: string, source: string, name?: string, comment?: string, photos?: File[]) {
+  const photosB64 = photos && photos.length > 0
+    ? await Promise.all(photos.map(fileToBase64))
+    : [];
   await fetch(SEND_LEAD_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, source, name, comment }),
+    body: JSON.stringify({ phone, source, name, comment, photos: photosB64 }),
   });
 }
 
@@ -190,7 +202,7 @@ export default function Index() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await sendLead(photoPhone, "Форма с фото", photoName, photoComment);
+    await sendLead(photoPhone, "Форма с фото", photoName, photoComment, photoFiles);
     setSubmitted(true);
   };
 
