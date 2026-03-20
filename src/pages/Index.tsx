@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
-const PHONE = "+7 (984) 500-42-20";
-const PHONE_RAW = "+79845004220";
+const PHONE = "+7 (977) 354-09-99";
+const PHONE_RAW = "+79773540999";
 const TG_LINK = "https://t.me/username";
 const MAX_LINK = "https://max.ru/username";
 
