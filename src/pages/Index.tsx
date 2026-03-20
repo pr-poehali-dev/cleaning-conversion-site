@@ -1,6 +1,16 @@
 import { useState, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
+const SEND_LEAD_URL = "https://functions.poehali.dev/3b0862b6-b985-4b0e-93df-941d814f6cd7";
+
+async function sendLead(phone: string, source: string, name?: string, comment?: string) {
+  await fetch(SEND_LEAD_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, source, name, comment }),
+  });
+}
+
 const PHONE = "+7 (977) 354-09-99";
 const PHONE_RAW = "+79773540999";
 const TG_LINK = "https://t.me/username";
@@ -157,8 +167,11 @@ function StarRating({ count }: { count: number }) {
 export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [heroPhone, setHeroPhone] = useState("");
+  const [heroSent, setHeroSent] = useState(false);
   const [sidePhone, setSidePhone] = useState("");
+  const [sideSent, setSideSent] = useState(false);
   const [reviewPhone, setReviewPhone] = useState("");
+  const [reviewSent, setReviewSent] = useState(false);
   const [showReviews, setShowReviews] = useState(2);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoName, setPhotoName] = useState("");
@@ -175,9 +188,31 @@ export default function Index() {
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await sendLead(photoPhone, "Форма с фото", photoName, photoComment);
     setSubmitted(true);
+  };
+
+  const handleHeroSubmit = async () => {
+    if (!heroPhone) return;
+    await sendLead(heroPhone, "Заказать звонок (герой)");
+    setHeroSent(true);
+    setHeroPhone("");
+  };
+
+  const handleSideSubmit = async () => {
+    if (!sidePhone) return;
+    await sendLead(sidePhone, "Скидка 15% (сайдбар)");
+    setSideSent(true);
+    setSidePhone("");
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!reviewPhone) return;
+    await sendLead(reviewPhone, "Скидка 15% (отзывы)");
+    setReviewSent(true);
+    setReviewPhone("");
   };
 
   const scrollTo = (id: string) => {
@@ -330,19 +365,23 @@ export default function Index() {
               <br />
               Закажите звонок
             </h2>
-            <div className="flex gap-3 mt-4 flex-wrap">
-              <input
-                type="tel"
-                value={heroPhone}
-                onChange={handlePhoneChange(setHeroPhone)}
-                placeholder="+7 (___) ___-__-__"
-                maxLength={18}
-                className="flex-1 min-w-[180px] px-4 py-3 rounded-lg border-2 border-white bg-white text-[#1a1a1a] font-medium placeholder:text-gray-400 focus:outline-none text-sm"
-              />
-              <button className="bg-white text-[#1a1a1a] font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm whitespace-nowrap">
-                Перезвоните
-              </button>
-            </div>
+            {heroSent ? (
+              <div className="mt-4 text-white font-bold text-sm">✅ Принято! Перезвоню вам в ближайшее время.</div>
+            ) : (
+              <div className="flex gap-3 mt-4 flex-wrap">
+                <input
+                  type="tel"
+                  value={heroPhone}
+                  onChange={handlePhoneChange(setHeroPhone)}
+                  placeholder="+7 (___) ___-__-__"
+                  maxLength={18}
+                  className="flex-1 min-w-[180px] px-4 py-3 rounded-lg border-2 border-white bg-white text-[#1a1a1a] font-medium placeholder:text-gray-400 focus:outline-none text-sm"
+                />
+                <button onClick={handleHeroSubmit} className="bg-white text-[#1a1a1a] font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm whitespace-nowrap">
+                  Перезвоните
+                </button>
+              </div>
+            )}
             <label className="flex items-center gap-2 mt-3 cursor-pointer">
               <input type="checkbox" className="w-4 h-4" defaultChecked />
               <span className="text-white text-xs opacity-80">
@@ -416,20 +455,26 @@ export default function Index() {
               </span>
             </div>
             <p className="text-sm text-gray-600 mb-4">за ОНЛАЙН заявку</p>
-            <input
-              type="tel"
-              value={sidePhone}
-              onChange={handlePhoneChange(setSidePhone)}
-              placeholder="+7 (___) ___-__-__"
-              maxLength={18}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
-            />
-            <button className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
-              Получить скидку
-            </button>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Перезвоню вам через 2 минуты
-            </p>
+            {sideSent ? (
+              <p className="text-[#f5a623] font-bold text-sm text-center py-3">✅ Принято! Перезвоню через 2 минуты.</p>
+            ) : (
+              <>
+                <input
+                  type="tel"
+                  value={sidePhone}
+                  onChange={handlePhoneChange(setSidePhone)}
+                  placeholder="+7 (___) ___-__-__"
+                  maxLength={18}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
+                />
+                <button onClick={handleSideSubmit} className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
+                  Получить скидку
+                </button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Перезвоню вам через 2 минуты
+                </p>
+              </>
+            )}
           </div>
 
           {/* MESSENGER BUTTONS */}
@@ -734,20 +779,26 @@ export default function Index() {
                 </span>
               </div>
               <p className="text-sm text-gray-600 mb-4">за ОНЛАЙН заявку</p>
-              <input
-                type="tel"
-                value={reviewPhone}
-                onChange={handlePhoneChange(setReviewPhone)}
-                placeholder="+7 (___) ___-__-__"
-                maxLength={18}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
-              />
-              <button className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
-                Получить скидку
-              </button>
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                Перезвоню вам через 2 минуты
-              </p>
+              {reviewSent ? (
+                <p className="text-[#f5a623] font-bold text-sm text-center py-3">✅ Принято! Перезвоню через 2 минуты.</p>
+              ) : (
+                <>
+                  <input
+                    type="tel"
+                    value={reviewPhone}
+                    onChange={handlePhoneChange(setReviewPhone)}
+                    placeholder="+7 (___) ___-__-__"
+                    maxLength={18}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#f5a623] transition-colors mb-3"
+                  />
+                  <button onClick={handleReviewSubmit} className="w-full bg-[#f5a623] text-white font-bold py-3 rounded-lg hover:bg-[#e09010] transition-colors text-sm">
+                    Получить скидку
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Перезвоню вам через 2 минуты
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
