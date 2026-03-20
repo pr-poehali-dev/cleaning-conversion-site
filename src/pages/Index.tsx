@@ -364,7 +364,7 @@ export default function Index() {
             </div>
             <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#1a1a1a] bg-yellow-50 border border-[#f5a623] rounded-lg px-4 py-3">
               <span>👉</span>
-              <span>Точную цену назовём по фото за 1 минуту</span>
+              <span>Точную цену назову по фото за 1 минуту</span>
             </div>
           </div>
         </div>
