@@ -306,16 +306,16 @@ export default function Index() {
             <span className="text-gray-500 text-2xl font-bold">(с выездом на дом)</span>
           </h1>
 
-          <div className="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+          <div className="flex items-start gap-5 bg-gray-50 rounded-xl p-4">
             <div className="relative shrink-0">
-              <div className="w-16 h-16 rounded-full bg-[#e8e8e8] overflow-hidden">
+              <div className="w-28 h-28 rounded-2xl bg-[#e8e8e8] overflow-hidden">
                 <img
                   src="https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/9b4e82fe-91df-4a1b-92bc-62b7e31d9a32.jpg"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                   alt="Мастер"
                 />
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+              <div className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
             </div>
             <div className="text-sm text-gray-700 leading-relaxed">Я — Вячеслав, частный мастер по химчистке мебели. Работаю быстро и качественно, а главное — на совесть. На все работы даю гарантию. Для оценки стоимости работы присылайте фотографии мебели любым удобным способом. </div>
           </div>
