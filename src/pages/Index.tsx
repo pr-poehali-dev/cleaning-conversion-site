@@ -69,7 +69,7 @@ const faqs = [
 ];
 
 const galleryItems = [
-  { id: 1, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/95cab6ed-18c5-4a32-98d7-5b981293bcfc.png", alt: "Химчистка углового дивана" },
+  { id: 1, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/ef9b278f-784e-49df-a548-d062b8317325.png", alt: "Химчистка углового дивана" },
   { id: 2, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/d2a455a6-0874-4093-af12-9dfcca6fa877.jpg", alt: "Химчистка дивана до и после" },
   { id: 3, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/289adb90-ff93-4f41-a249-778e55a498cf.jpg", alt: "Химчистка белого дивана" },
   { id: 4, src: "https://cdn.poehali.dev/projects/a39cf82c-e01c-4716-93ab-656c1e5b9b49/bucket/47fecc49-6ebb-4b60-a50a-0ac5cdc81957.jpg", alt: "Химчистка бежевого дивана" },
