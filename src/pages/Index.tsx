@@ -216,14 +216,14 @@ export default function Index() {
 
   const handleSideSubmit = async () => {
     if (!sidePhone) return;
-    await sendLead(sidePhone, "Скидка 15% (сайдбар)");
+    await sendLead(sidePhone, "Скидка 10% (сайдбар)");
     setSideSent(true);
     setSidePhone("");
   };
 
   const handleReviewSubmit = async () => {
     if (!reviewPhone) return;
-    await sendLead(reviewPhone, "Скидка 15% (отзывы)");
+    await sendLead(reviewPhone, "Скидка 10% (отзывы)");
     setReviewSent(true);
     setReviewPhone("");
   };
@@ -476,7 +476,7 @@ export default function Index() {
             <div className="flex items-center gap-2 mb-1">
               <span className="font-black text-lg">Скидки</span>
               <span className="bg-[#f5a623] text-white font-black text-sm px-2 py-0.5 rounded">
-                15%
+                10%
               </span>
             </div>
             <p className="text-sm text-gray-600 mb-4">за ОНЛАЙН заявку</p>
@@ -800,7 +800,7 @@ export default function Index() {
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-black text-lg">Скидки</span>
                 <span className="bg-[#f5a623] text-white font-black text-sm px-2 py-0.5 rounded">
-                  15%
+                  10%
                 </span>
               </div>
               <p className="text-sm text-gray-600 mb-4">за ОНЛАЙН заявку</p>
