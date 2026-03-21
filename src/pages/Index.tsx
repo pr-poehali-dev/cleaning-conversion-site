@@ -25,8 +25,8 @@ async function sendLead(phone: string, source: string, name?: string, comment?: 
 
 const PHONE = "+7 (977) 354-09-99";
 const PHONE_RAW = "+79773540999";
-const TG_LINK = "https://t.me/username";
-const MAX_LINK = "https://max.ru/username";
+const TG_LINK = "https://t.me/clean_himch";
+const MAX_LINK = "https://max.ru/call/79773540999";
 
 const services = [
   { category: "🛋 Диваны", name: "", price: "" },
@@ -193,6 +193,7 @@ export default function Index() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const [fabOpen, setFabOpen] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -364,7 +365,19 @@ export default function Index() {
               </div>
               <div className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
             </div>
-            <div className="text-sm text-gray-700 leading-relaxed">Я — Вячеслав, частный мастер по химчистке мебели. Работаю быстро и качественно, а главное — на совесть. На все работы даю гарантию. Для оценки стоимости работы присылайте фотографии мебели любым удобным способом. </div>
+            <div className="text-sm text-gray-700 leading-relaxed">
+              Я — Вячеслав, частный мастер по химчистке мебели. Работаю быстро и качественно, а главное — на совесть. На все работы даю гарантию. Для оценки стоимости работы присылайте фотографии мебели любым удобным способом.
+              <div className="flex gap-2 mt-3 flex-wrap">
+                <a href={TG_LINK} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-[#29a8e8] text-white font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-[#1a90cc] transition-colors">
+                  ✈️ Telegram
+                </a>
+                <a href={MAX_LINK} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-[#0077ff] text-white font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-[#0060cc] transition-colors">
+                  💬 Max
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* CALLBACK FORM */}
@@ -900,6 +913,88 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* FLOATING ACTION BUTTON */}
+      <style>{`
+        @keyframes fab-pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(245,166,35,0.5); }
+          50% { transform: scale(1.1); box-shadow: 0 6px 30px rgba(245,166,35,0.8); }
+        }
+        .fab-btn { animation: fab-pulse 2s ease-in-out infinite; }
+        .fab-btn:hover { animation: none; transform: scale(1.15); }
+        @keyframes fab-item-in {
+          from { opacity: 0; transform: translateY(12px) scale(0.9); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .fab-item { animation: fab-item-in 0.2s ease forwards; }
+      `}</style>
+
+      {fabOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setFabOpen(false)}
+        />
+      )}
+
+      <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">
+        {fabOpen && (
+          <div className="flex flex-col items-end gap-2 mb-1">
+            <a
+              href={`tel:${PHONE_RAW}`}
+              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
+              style={{ animationDelay: "0ms" }}
+              onClick={() => setFabOpen(false)}
+            >
+              <span className="w-9 h-9 bg-[#f5a623] rounded-xl flex items-center justify-center shrink-0">
+                <Icon name="Phone" size={18} className="text-white" />
+              </span>
+              <div>
+                <div className="text-xs text-gray-500 font-normal leading-tight">Позвонить</div>
+                <div>{PHONE}</div>
+              </div>
+            </a>
+
+            <a
+              href={TG_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
+              style={{ animationDelay: "60ms" }}
+              onClick={() => setFabOpen(false)}
+            >
+              <span className="w-9 h-9 bg-[#29a8e8] rounded-xl flex items-center justify-center shrink-0 text-white text-lg">✈️</span>
+              <div>
+                <div className="text-xs text-gray-500 font-normal leading-tight">Telegram</div>
+                <div>@clean_himch</div>
+              </div>
+            </a>
+
+            <a
+              href={MAX_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
+              style={{ animationDelay: "120ms" }}
+              onClick={() => setFabOpen(false)}
+            >
+              <span className="w-9 h-9 bg-[#0077ff] rounded-xl flex items-center justify-center shrink-0 text-white text-lg">💬</span>
+              <div>
+                <div className="text-xs text-gray-500 font-normal leading-tight">Написать в Max</div>
+                <div>{PHONE}</div>
+              </div>
+            </a>
+          </div>
+        )}
+
+        <button
+          onClick={() => setFabOpen(!fabOpen)}
+          className={`fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl transition-transform ${fabOpen ? "rotate-45" : ""}`}
+          style={fabOpen ? { animation: "none", transform: "scale(1.05) rotate(45deg)" } : {}}
+        >
+          <Icon name="MessageCircle" size={28} className={fabOpen ? "opacity-0 absolute" : ""} />
+          {fabOpen && <Icon name="X" size={26} />}
+        </button>
+      </div>
 
       {/* FOOTER */}
       <footer className="bg-[#1a1a1a] text-white py-8 text-center text-sm">
