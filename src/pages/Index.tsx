@@ -193,7 +193,7 @@ export default function Index() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
-  const [fabOpen, setFabOpen] = useState(false);
+
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"}[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -952,13 +952,6 @@ export default function Index() {
         .fab-item { animation: fab-item-in 0.2s ease forwards; }
       `}</style>
 
-      {fabOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setFabOpen(false)}
-        />
-      )}
-
       {/* Чат-виджет */}
       {chatOpen && (
         <div style={{position:"fixed",bottom:"100px",right:"20px",width:"320px",border:"1px solid #ddd",borderRadius:"12px",background:"white",boxShadow:"0 8px 24px rgba(0,0,0,0.15)",display:"flex",flexDirection:"column",zIndex:9999,overflow:"hidden",fontFamily:"sans-serif"}}>
@@ -976,66 +969,12 @@ export default function Index() {
         </div>
       )}
 
-      {/* Кнопка чата */}
-      <button onClick={() => setChatOpen(!chatOpen)} style={{position:"fixed",bottom:"92px",right:"20px",background:"#007bff",color:"white",border:"none",borderRadius:"50%",width:"56px",height:"56px",fontSize:"24px",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.2)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center"}}>💬</button>
-
       <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">
-        {fabOpen && (
-          <div className="flex flex-col items-end gap-2 mb-1">
-            <a
-              href={`tel:${PHONE_RAW}`}
-              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
-              style={{ animationDelay: "0ms" }}
-              onClick={() => setFabOpen(false)}
-            >
-              <span className="w-9 h-9 bg-[#f5a623] rounded-xl flex items-center justify-center shrink-0">
-                <Icon name="Phone" size={18} className="text-white" />
-              </span>
-              <div>
-                <div className="text-xs text-gray-500 font-normal leading-tight">Позвонить</div>
-                <div>{PHONE}</div>
-              </div>
-            </a>
-
-            <a
-              href={TG_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
-              style={{ animationDelay: "60ms" }}
-              onClick={() => setFabOpen(false)}
-            >
-              <span className="w-9 h-9 bg-[#29a8e8] rounded-xl flex items-center justify-center shrink-0 text-white text-lg">✈️</span>
-              <div>
-                <div className="text-xs text-gray-500 font-normal leading-tight">Telegram</div>
-                <div>@clean_himch</div>
-              </div>
-            </a>
-
-            <a
-              href={MAX_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="fab-item flex items-center gap-3 bg-white shadow-xl rounded-2xl px-4 py-3 text-sm font-bold text-[#1a1a1a] hover:bg-gray-50 transition-colors border border-gray-100"
-              style={{ animationDelay: "120ms" }}
-              onClick={() => setFabOpen(false)}
-            >
-              <span className="w-9 h-9 bg-[#0077ff] rounded-xl flex items-center justify-center shrink-0 text-white text-lg">💬</span>
-              <div>
-                <div className="text-xs text-gray-500 font-normal leading-tight">Написать в Max</div>
-                <div>{PHONE}</div>
-              </div>
-            </a>
-          </div>
-        )}
-
         <button
-          onClick={() => setFabOpen(!fabOpen)}
-          className={`fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl transition-transform ${fabOpen ? "rotate-45" : ""}`}
-          style={fabOpen ? { animation: "none", transform: "scale(1.05) rotate(45deg)" } : {}}
+          onClick={() => { setChatOpen(!chatOpen); }}
+          className="fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl"
         >
-          <Icon name="MessageCircle" size={28} className={fabOpen ? "opacity-0 absolute" : ""} />
-          {fabOpen && <Icon name="X" size={26} />}
+          <Icon name={chatOpen ? "X" : "MessageCircle"} size={28} />
         </button>
       </div>
 
