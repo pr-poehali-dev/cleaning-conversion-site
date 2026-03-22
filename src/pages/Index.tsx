@@ -202,7 +202,7 @@ export default function Index() {
     if (!id) { id = "id_" + Math.random().toString(36).substr(2, 9); localStorage.setItem("siteClientId", id); }
     return id;
   })();
-  const CHAT_SERVER = "http://185.139.69.164:3000";
+  const CHAT_SERVER = "https://chat.himchistki-master.ru";
 
   const sendChatMessage = async () => {
     const text = chatInput.trim();
