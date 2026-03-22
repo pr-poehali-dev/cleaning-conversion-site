@@ -194,6 +194,29 @@ export default function Index() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
   const [fabOpen, setFabOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"}[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const chatClientId = (() => {
+    let id = localStorage.getItem("siteClientId");
+    if (!id) { id = "id_" + Math.random().toString(36).substr(2, 9); localStorage.setItem("siteClientId", id); }
+    return id;
+  })();
+  const CHAT_SERVER = "http://185.139.69.164:3000";
+
+  const sendChatMessage = async () => {
+    const text = chatInput.trim();
+    if (!text) return;
+    setChatInput("");
+    setChatMessages(prev => [...prev, { text, sender: "client" }]);
+    try {
+      await fetch(`${CHAT_SERVER}/api/message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: chatClientId, text }),
+      });
+    } catch (e) { console.error(e); }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -935,6 +958,26 @@ export default function Index() {
           onClick={() => setFabOpen(false)}
         />
       )}
+
+      {/* Чат-виджет */}
+      {chatOpen && (
+        <div style={{position:"fixed",bottom:"100px",right:"20px",width:"320px",border:"1px solid #ddd",borderRadius:"12px",background:"white",boxShadow:"0 8px 24px rgba(0,0,0,0.15)",display:"flex",flexDirection:"column",zIndex:9999,overflow:"hidden",fontFamily:"sans-serif"}}>
+          <div style={{background:"#007bff",color:"white",padding:"15px",textAlign:"center",fontWeight:"bold",cursor:"pointer",fontSize:"16px"}} onClick={() => setChatOpen(false)}>Связаться с нами ✕</div>
+          <div style={{height:"300px",overflowY:"auto",padding:"15px",display:"flex",flexDirection:"column",gap:"10px",background:"#f9f9f9"}}>
+            {chatMessages.length === 0 && <div style={{color:"#999",fontSize:"13px",textAlign:"center",marginTop:"auto",marginBottom:"auto"}}>Напишите нам — ответим быстро!</div>}
+            {chatMessages.map((m, i) => (
+              <div key={i} style={{padding:"10px 14px",borderRadius:"15px",maxWidth:"85%",wordWrap:"break-word",fontSize:"14px",alignSelf:m.sender==="client"?"flex-end":"flex-start",background:m.sender==="client"?"#007bff":"#e5e5ea",color:m.sender==="client"?"white":"black"}}>{m.text}</div>
+            ))}
+          </div>
+          <div style={{display:"flex",padding:"10px",background:"white",borderTop:"1px solid #eee"}}>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key==="Enter" && sendChatMessage()} placeholder="Ваше сообщение..." style={{flex:1,padding:"10px",border:"1px solid #ddd",borderRadius:"20px",outline:"none",fontSize:"14px"}} />
+            <button onClick={sendChatMessage} style={{marginLeft:"8px",width:"40px",height:"40px",background:"#007bff",color:"white",border:"none",borderRadius:"50%",cursor:"pointer",fontSize:"16px",display:"flex",alignItems:"center",justifyContent:"center"}}>➤</button>
+          </div>
+        </div>
+      )}
+
+      {/* Кнопка чата */}
+      <button onClick={() => setChatOpen(!chatOpen)} style={{position:"fixed",bottom:"92px",right:"20px",background:"#007bff",color:"white",border:"none",borderRadius:"50%",width:"56px",height:"56px",fontSize:"24px",cursor:"pointer",boxShadow:"0 4px 12px rgba(0,0,0,0.2)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center"}}>💬</button>
 
       <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">
         {fabOpen && (
