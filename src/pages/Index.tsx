@@ -195,8 +195,9 @@ export default function Index() {
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
   const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"}[]>([]);
+  const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"; isPhoto?: boolean}[]>([]);
   const [chatInput, setChatInput] = useState("");
+  const chatFileInputRef = useRef<HTMLInputElement>(null);
   const chatClientId = (() => {
     let id = localStorage.getItem("siteClientId");
     if (!id) { id = "id_" + Math.random().toString(36).substr(2, 9); localStorage.setItem("siteClientId", id); }
@@ -216,6 +217,41 @@ export default function Index() {
         body: JSON.stringify({ clientId: chatClientId, text }),
       });
     } catch (e) { console.error(e); }
+  };
+
+  const sendChatPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) setChatMessages(prev => [...prev, { text: ev.target!.result as string, sender: "client", isPhoto: true }]);
+    };
+    reader.readAsDataURL(file);
+    const formData = new FormData();
+    formData.append("photo", file);
+    formData.append("clientId", chatClientId);
+    try {
+      await fetch(`${CHAT_SERVER}/api/photo`, { method: "POST", body: formData });
+    } catch (e) { console.error(e); }
+    e.target.value = "";
+  };
+
+  // Polling новых сообщений каждые 3 сек
+  const chatPollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startChatPolling = () => {
+    if (chatPollingRef.current) return;
+    chatPollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`${CHAT_SERVER}/api/updates?clientId=${chatClientId}`);
+        const data = await res.json();
+        if (data.messages && data.messages.length > 0) {
+          setChatMessages(prev => [...prev, ...data.messages.map((m: string) => ({ text: m, sender: "manager" as const }))]);
+        }
+      } catch (e) { console.error(e); }
+    }, 3000);
+  };
+  const stopChatPolling = () => {
+    if (chatPollingRef.current) { clearInterval(chatPollingRef.current); chatPollingRef.current = null; }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -955,14 +991,18 @@ export default function Index() {
       {/* Чат-виджет */}
       {chatOpen && (
         <div style={{position:"fixed",bottom:"100px",right:"20px",width:"320px",border:"1px solid #ddd",borderRadius:"12px",background:"white",boxShadow:"0 8px 24px rgba(0,0,0,0.15)",display:"flex",flexDirection:"column",zIndex:9999,overflow:"hidden",fontFamily:"sans-serif"}}>
-          <div style={{background:"#007bff",color:"white",padding:"15px",textAlign:"center",fontWeight:"bold",cursor:"pointer",fontSize:"16px"}} onClick={() => setChatOpen(false)}>Связаться с нами ✕</div>
-          <div style={{height:"300px",overflowY:"auto",padding:"15px",display:"flex",flexDirection:"column",gap:"10px",background:"#f9f9f9"}}>
+          <div style={{background:"#007bff",color:"white",padding:"15px",textAlign:"center",fontWeight:"bold",cursor:"pointer",fontSize:"16px"}} onClick={() => { setChatOpen(false); stopChatPolling(); }}>Связаться с нами ⬇</div>
+          <div style={{height:"350px",overflowY:"auto",padding:"15px",display:"flex",flexDirection:"column",gap:"10px",background:"#f9f9f9"}}>
             {chatMessages.length === 0 && <div style={{color:"#999",fontSize:"13px",textAlign:"center",marginTop:"auto",marginBottom:"auto"}}>Напишите нам — ответим быстро!</div>}
             {chatMessages.map((m, i) => (
-              <div key={i} style={{padding:"10px 14px",borderRadius:"15px",maxWidth:"85%",wordWrap:"break-word",fontSize:"14px",alignSelf:m.sender==="client"?"flex-end":"flex-start",background:m.sender==="client"?"#007bff":"#e5e5ea",color:m.sender==="client"?"white":"black"}}>{m.text}</div>
+              <div key={i} style={{padding:"10px 14px",borderRadius:"15px",maxWidth:"85%",wordWrap:"break-word",fontSize:"14px",alignSelf:m.sender==="client"?"flex-end":"flex-start",background:m.sender==="client"?"#007bff":"#e5e5ea",color:m.sender==="client"?"white":"black",borderBottomRightRadius:m.sender==="client"?"2px":"15px",borderBottomLeftRadius:m.sender==="manager"?"2px":"15px"}}>
+                {m.isPhoto ? <img src={m.text} alt="фото" style={{maxWidth:"100%",borderRadius:"10px",display:"block",marginTop:"5px"}} /> : m.text}
+              </div>
             ))}
           </div>
-          <div style={{display:"flex",padding:"10px",background:"white",borderTop:"1px solid #eee"}}>
+          <div style={{display:"flex",alignItems:"center",padding:"10px",background:"white",borderTop:"1px solid #eee"}}>
+            <input type="file" accept="image/*" ref={chatFileInputRef} style={{display:"none"}} onChange={sendChatPhoto} />
+            <button onClick={() => chatFileInputRef.current?.click()} style={{background:"none",border:"none",fontSize:"20px",cursor:"pointer",color:"#666",marginRight:"5px"}}>📎</button>
             <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key==="Enter" && sendChatMessage()} placeholder="Ваше сообщение..." style={{flex:1,padding:"10px",border:"1px solid #ddd",borderRadius:"20px",outline:"none",fontSize:"14px"}} />
             <button onClick={sendChatMessage} style={{marginLeft:"8px",width:"40px",height:"40px",background:"#007bff",color:"white",border:"none",borderRadius:"50%",cursor:"pointer",fontSize:"16px",display:"flex",alignItems:"center",justifyContent:"center"}}>➤</button>
           </div>
@@ -971,7 +1011,7 @@ export default function Index() {
 
       <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">
         <button
-          onClick={() => { setChatOpen(!chatOpen); }}
+          onClick={() => { setChatOpen(v => { if (!v) startChatPolling(); else stopChatPolling(); return !v; }); }}
           className="fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl"
         >
           <Icon name={chatOpen ? "X" : "MessageCircle"} size={28} />
