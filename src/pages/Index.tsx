@@ -194,22 +194,64 @@ export default function Index() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"; isPhoto?: boolean}[]>([]);
-  const [chatInput, setChatInput] = useState("");
-  const chatFileInputRef = useRef<HTMLInputElement>(null);
+  const CHAT_SERVER = "https://chat.himchistki-master.ru";
+  const CHAT_STORAGE_KEY = "chatMessages_v1";
+
   const chatClientId = (() => {
     let id = localStorage.getItem("siteClientId");
     if (!id) { id = "id_" + Math.random().toString(36).substr(2, 9); localStorage.setItem("siteClientId", id); }
     return id;
   })();
-  const CHAT_SERVER = "https://chat.himchistki-master.ru";
+
+  const loadSavedMessages = (): {text: string; sender: "client" | "manager"; isPhoto?: boolean}[] => {
+    try { return JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || "[]"); } catch { return []; }
+  };
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{text: string; sender: "client" | "manager"; isPhoto?: boolean}[]>(loadSavedMessages);
+  const [chatInput, setChatInput] = useState("");
+  const [chatUnread, setChatUnread] = useState(0);
+  const chatFileInputRef = useRef<HTMLInputElement>(null);
+  const chatSoundRef = useRef<AudioContext | null>(null);
+
+  const saveChatMessages = (msgs: {text: string; sender: "client" | "manager"; isPhoto?: boolean}[]) => {
+    try { localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(msgs.slice(-100))); } catch (err) { void err; }
+  };
+
+  const playChatSound = () => {
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4);
+      chatSoundRef.current = ctx;
+    } catch (err) { void err; }
+  };
+
+  const addManagerMessages = (msgs: string[]) => {
+    setChatMessages(prev => {
+      const updated = [...prev, ...msgs.map((m: string) => ({ text: m, sender: "manager" as const }))];
+      saveChatMessages(updated);
+      return updated;
+    });
+    setChatUnread(n => n + msgs.length);
+    playChatSound();
+  };
 
   const sendChatMessage = async () => {
     const text = chatInput.trim();
     if (!text) return;
     setChatInput("");
-    setChatMessages(prev => [...prev, { text, sender: "client" }]);
+    setChatMessages(prev => {
+      const updated = [...prev, { text, sender: "client" as const }];
+      saveChatMessages(updated);
+      return updated;
+    });
     try {
       await fetch(`${CHAT_SERVER}/api/message`, {
         method: "POST",
@@ -224,19 +266,22 @@ export default function Index() {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (ev) => {
-      if (ev.target?.result) setChatMessages(prev => [...prev, { text: ev.target!.result as string, sender: "client", isPhoto: true }]);
+      if (ev.target?.result) {
+        setChatMessages(prev => {
+          const updated = [...prev, { text: ev.target!.result as string, sender: "client" as const, isPhoto: true }];
+          saveChatMessages(updated);
+          return updated;
+        });
+      }
     };
     reader.readAsDataURL(file);
     const formData = new FormData();
     formData.append("photo", file);
     formData.append("clientId", chatClientId);
-    try {
-      await fetch(`${CHAT_SERVER}/api/photo`, { method: "POST", body: formData });
-    } catch (e) { console.error(e); }
+    try { await fetch(`${CHAT_SERVER}/api/photo`, { method: "POST", body: formData }); } catch (e) { console.error(e); }
     e.target.value = "";
   };
 
-  // Polling новых сообщений каждые 3 сек
   const chatPollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startChatPolling = () => {
     if (chatPollingRef.current) return;
@@ -244,9 +289,7 @@ export default function Index() {
       try {
         const res = await fetch(`${CHAT_SERVER}/api/updates?clientId=${chatClientId}`);
         const data = await res.json();
-        if (data.messages && data.messages.length > 0) {
-          setChatMessages(prev => [...prev, ...data.messages.map((m: string) => ({ text: m, sender: "manager" as const }))]);
-        }
+        if (data.messages && data.messages.length > 0) addManagerMessages(data.messages);
       } catch (e) { console.error(e); }
     }, 3000);
   };
@@ -1011,10 +1054,15 @@ export default function Index() {
 
       <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3">
         <button
-          onClick={() => { setChatOpen(v => { if (!v) startChatPolling(); else stopChatPolling(); return !v; }); }}
-          className="fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl"
+          onClick={() => { setChatOpen(v => { if (!v) { startChatPolling(); setChatUnread(0); } else stopChatPolling(); return !v; }); }}
+          className="fab-btn w-16 h-16 rounded-full bg-[#f5a623] text-white flex items-center justify-center shadow-2xl relative"
         >
           <Icon name={chatOpen ? "X" : "MessageCircle"} size={28} />
+          {!chatOpen && chatUnread > 0 && (
+            <span style={{position:"absolute",top:"2px",right:"2px",background:"#e53e3e",color:"white",borderRadius:"50%",width:"20px",height:"20px",fontSize:"11px",fontWeight:"bold",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
+              {chatUnread > 99 ? "99+" : chatUnread}
+            </span>
+          )}
         </button>
       </div>
 
